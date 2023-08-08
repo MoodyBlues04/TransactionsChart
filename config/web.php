@@ -5,8 +5,11 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
+    'name' => 'TransactionsChartApp',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'controllerNamespace' => 'app\controllers',
+    'defaultRoute' => 'index/index',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -42,14 +45,11 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'rules' => [],
         ],
-        */
     ],
     'params' => $params,
 ];
