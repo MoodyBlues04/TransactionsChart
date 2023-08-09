@@ -31,19 +31,13 @@ class TransactionReportController extends Controller
             $transactionReportForm = new TransactionReportForm();
             $transactionReportForm->loadPostData();
 
-            if (!$transactionReportForm->upload()) {
-                throw new \Exception('Invalid transaction report, not uploaded');
-            }
-
-            $transactionReport = new TransactionReport();
-            $transactionReport->path = $transactionReportForm->getPublicPath();
-            if (!$transactionReport->save()) {
-                throw new \Exception('Path not saved to database');
-            }
+            // TODO to ActiveRecord model
+            $transactionReportForm->save();
 
             return $this->redirect('./index');
         } catch (\Exception $e) {
             // TODO logging
+            // TODO error handler
             \Yii::$app->session->setFlash('error', $e->getMessage());
             return $this->redirect(\Yii::$app->request->referrer ?: \Yii::$app->homeUrl);
         }
@@ -51,6 +45,23 @@ class TransactionReportController extends Controller
 
     public function actionDelete()
     {
-        var_dump(\Yii::$app->request->post());
+        try {
+            $transactionReportId = \Yii::$app->request->post('id');
+            if (is_null($transactionReportId)) {
+                throw new \Exception('Report id is required');
+            }
+
+            $transactionReport = TransactionReport::findOne($transactionReportId);
+            if (is_null($transactionReport)) {
+                throw new \Exception('Invalid report id');
+            }
+
+            $transactionReport->delete();
+
+            return $this->redirect('./index');
+        } catch (\Exception $e) {
+            \Yii::$app->session->setFlash('error', $e->getMessage());
+            return $this->redirect(\Yii::$app->request->referrer ?: \Yii::$app->homeUrl);
+        }
     }
 }

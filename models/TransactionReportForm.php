@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\Storage;
 use yii\base\Model;
 use yii\web\UploadedFile;
 
@@ -21,22 +22,54 @@ class TransactionReportForm extends Model
         $this->transactionReport = UploadedFile::getInstance($this, 'transactionReport');
     }
 
-    public function upload(): bool
+    /**
+     * @throws \Exception
+     */
+    public function save(): TransactionReport
+    {
+        $transactionReportPath = $this->uploadTransactionReport();
+
+        return $this->saveTransactionReport($transactionReportPath);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function uploadTransactionReport(): string
     {
         if (!$this->validate()) {
-            return false;
+            throw new \Exception('Invalid file');
         }
 
-        return $this->transactionReport->saveAs($this->getTransactionReportStoragePath());
+        $transactionReportPath =  $this->getPublicPath();
+        if (!Storage::saveUploadedFile($this->transactionReport, $transactionReportPath)) {
+            throw new \Exception('File not saved');
+        }
+
+        return $transactionReportPath;
     }
 
-    public function getPublicPath(): string
+    /**
+     * @throws \Exception
+     */
+    private function saveTransactionReport(string $path): TransactionReport
     {
-        return "/storage/{$this->transactionReport->baseName}.{$this->transactionReport->extension}";
+        $transactionReport = new TransactionReport();
+        $transactionReport->path = $path;
+        if (!$transactionReport->save()) {
+            throw new \Exception('Path not saved to DB');
+        }
+
+        return $transactionReport;
     }
 
-    private function getTransactionReportStoragePath(): string
+    private function getPublicPath(): string
     {
-        return \Yii::getAlias('@webroot') . $this->getPublicPath();
+        return "{$this->transactionReport->baseName}-{$this->timestamp()}.{$this->transactionReport->extension}";
+    }
+
+    private function timestamp(): string
+    {
+        return (string)time();
     }
 }
