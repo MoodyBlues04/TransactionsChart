@@ -15,6 +15,30 @@ class HtmlParser
         $this->dom->loadHTML($html);
     }
 
+    public function getBalance(string $balanceColumnName): array
+    {
+        $table = $this->parseTableToArray();
+
+        $balanceData = [];
+
+        $columnIdx = false;
+
+        foreach ($table as $row) {
+            if ($columnIdx === false) {
+                $columnIdx = array_search($balanceColumnName, $row);
+                continue;
+            }
+
+            if (!isset($row[$columnIdx])) {
+                continue;
+            }
+
+            $balanceData[] = end($balanceData) + (float)str_replace(' ', '', $row[$columnIdx]);
+        }
+
+        return $balanceData;
+    }
+
     /**
      * @param string $columnName column, that will be extract to array
      * 

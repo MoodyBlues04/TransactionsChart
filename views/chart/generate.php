@@ -1,25 +1,65 @@
 <?php
 
 /** @var array $profits */
+/** @var array $times */
 
-use app\assets\ChartAsset;
-use practically\chartjs\Chart;
-
-ChartAsset::register($this);
 ?>
 
-<?= Chart::widget([
-    'type' => Chart::TYPE_LINE,
-    'datasets' => [
-        [
-            // 'label' => 'test',
-            // 'data' => array_map(fn ($profit) => (float)$profit, $profits),
-            // 'label' => 'test',
-            'data' => [
-                't1' => 1,
-                't2' => 2
-            ]
-        ]
-    ]
-]);
-?>
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart');
+
+    const data = <?= json_encode($profits) ?>;
+    const labels = <?= json_encode($times) ?>;
+
+    const onRefresh = chart => {
+        const now = Date.now();
+        chart.data.datasets.forEach(dataset => {
+            dataset.data.push({
+                x: now,
+                y: Utils.rand(-100, 100)
+            });
+        });
+    };
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Profit',
+                data: data,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    realtime: {
+                        duration: 20000,
+                        refresh: 1000,
+                        delay: 2000,
+                        onRefresh: onRefresh
+                    },
+                    // type: 'realtime'
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                }
+            },
+            interaction: {
+                intersect: false
+            }
+        }
+    });
+</script>

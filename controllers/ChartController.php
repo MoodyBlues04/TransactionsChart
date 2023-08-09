@@ -8,6 +8,7 @@ use yii\web\Controller;
 
 class ChartController extends Controller
 {
+    public $layout = false;
     private TransactionReportRepository $transactionReportRepository;
 
     public function __construct($id, $module, $config = [], TransactionReportRepository $transactionReportRepository)
@@ -30,9 +31,16 @@ class ChartController extends Controller
 
         $html = $transactionReport->getReportFile();
 
-        // TODO for multiple columns: date & money
-        $profits = (new HtmlParser($html))->getColumnValues('Profit');
+        // TODO for multiple columns: date & money | also to lowercase when search
 
-        return $this->render('generate', compact('profits'));
+        // TODO check statistics (wrong may be)
+
+        $htmlParser = new HtmlParser($html);
+        $profits = $htmlParser->getBalance('Profit');
+        $times = $htmlParser->getColumnValues('Open Time');
+
+        // var_dump(sizeof($profits), sizeof($times));
+
+        return $this->render('generate', compact('profits', 'times'));
     }
 }
