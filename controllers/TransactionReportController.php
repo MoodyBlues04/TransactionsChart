@@ -4,11 +4,20 @@ namespace app\controllers;
 
 use app\models\TransactionReport;
 use app\models\TransactionReportForm;
+use app\repository\TransactionReportRepository;
 use yii\web\Controller;
 
 class TransactionReportController extends Controller
 {
-    // TODO dependency injection for repo & mb simple unit tests
+    private TransactionReportRepository $transactionReportRepository;
+
+    public function __construct($id, $module, $config = [], TransactionReportRepository $transactionReportRepository)
+    {
+        parent::__construct($id, $module, $config);
+        $this->transactionReportRepository = $transactionReportRepository;
+    }
+
+    // TODO mb simple unit tests
 
     // TODO all files form storage show
     public function actionIndex()
@@ -31,7 +40,7 @@ class TransactionReportController extends Controller
             $transactionReportForm = new TransactionReportForm();
             $transactionReportForm->loadPostData();
 
-            // TODO to ActiveRecord model
+            // TODO to ActiveRecord model / repo
             $transactionReportForm->save();
 
             return $this->redirect('./index');
@@ -46,12 +55,13 @@ class TransactionReportController extends Controller
     public function actionDelete()
     {
         try {
+            // TODO to obj ???
             $transactionReportId = \Yii::$app->request->post('id');
             if (is_null($transactionReportId)) {
                 throw new \Exception('Report id is required');
             }
 
-            $transactionReport = TransactionReport::findOne($transactionReportId);
+            $transactionReport = $this->transactionReportRepository->getById($transactionReportId);
             if (is_null($transactionReport)) {
                 throw new \Exception('Invalid report id');
             }

@@ -24,4 +24,9 @@ class TransactionReport extends ActiveRecord
         Storage::delete($this->path);
         return parent::beforeDelete();
     }
+
+    public function getReportFile(): string|bool
+    {
+        return Storage::get($this->path);
+    }
 }
