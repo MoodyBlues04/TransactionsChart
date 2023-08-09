@@ -30,8 +30,9 @@ class ChartController extends Controller
 
         $html = $transactionReport->getReportFile();
 
-        $profitCOlumnValues = (new HtmlParser($html))->getColumnValues('Profit');
+        // TODO for multiple columns: date & money
+        $profits = (new HtmlParser($html))->getColumnValues('Profit');
 
-        exit;
+        return $this->render('generate', compact('profits'));
     }
 }
