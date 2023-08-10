@@ -5,61 +5,59 @@
 
 ?>
 
-<div>
-    <canvas id="myChart"></canvas>
-</div>
+<html lang="<?= Yii::$app->language ?>" class="h-100">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<head>
+    <title>Chart</title>
 
-<script>
-const ctx = document.getElementById('myChart');
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-const data = <?= json_encode($balances) ?>;
-const labels = <?= json_encode($times) ?>;
+</head>
 
-const onRefresh = chart => {
-    const now = Date.now();
-    chart.data.datasets.forEach(dataset => {
-        dataset.data.push({
-            x: now,
-            y: Utils.rand(-100, 100)
-        });
-    });
-};
+<body class="d-flex flex-column h-100">
+    <div>
+        <button onclick="downloadChart()">Download</button>
+        <canvas id="myChart"></canvas>
+    </div>
 
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Profit',
-            data: data,
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            x: {
-                realtime: {
-                    duration: 20000,
-                    refresh: 1000,
-                    delay: 2000,
-                    onRefresh: onRefresh
-                },
-                // type: 'realtime'
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        const data = <?= json_encode($balances) ?>;
+        const labels = <?= json_encode($times) ?>;
+
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Profit',
+                    data: data,
+                    borderWidth: 1
+                }]
             },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Value'
-                }
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false
+                },
             }
-        },
-        interaction: {
-            intersect: false
+        });
+
+        function downloadChart() {
+            let a = document.createElement('a');
+            a.href = chart.toBase64Image();
+            a.download = `chart${Date.now()}.png`;
+
+            a.click();
         }
-    }
-});
-</script>
+    </script>
+</body>
