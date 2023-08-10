@@ -2,9 +2,10 @@
 
 namespace app\models;
 
+use app\dto\Balance;
+use app\helpers\HtmlParser;
 use app\helpers\Storage;
 use yii\db\ActiveRecord;
-use yii\web\UploadedFile;
 
 /**
  * @property int $id
@@ -28,5 +29,13 @@ class TransactionReport extends ActiveRecord
     public function getReportFile(): string|bool
     {
         return Storage::get($this->path);
+    }
+
+    public function getBalanceReport(string $balanceColumnName, string $timeColumnName): Balance
+    {
+        $html = $this->getReportFile();
+
+        $htmlParser = new HtmlParser($html);
+        return $htmlParser->getBalance($balanceColumnName, $timeColumnName);
     }
 }

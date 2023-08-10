@@ -1,6 +1,6 @@
 <?php
 
-/** @var array $profits */
+/** @var array $balances */
 /** @var array $times */
 
 ?>
@@ -14,52 +14,52 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const ctx = document.getElementById('myChart');
+const ctx = document.getElementById('myChart');
 
-    const data = <?= json_encode($profits) ?>;
-    const labels = <?= json_encode($times) ?>;
+const data = <?= json_encode($balances) ?>;
+const labels = <?= json_encode($times) ?>;
 
-    const onRefresh = chart => {
-        const now = Date.now();
-        chart.data.datasets.forEach(dataset => {
-            dataset.data.push({
-                x: now,
-                y: Utils.rand(-100, 100)
-            });
+const onRefresh = chart => {
+    const now = Date.now();
+    chart.data.datasets.forEach(dataset => {
+        dataset.data.push({
+            x: now,
+            y: Utils.rand(-100, 100)
         });
-    };
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Profit',
-                data: data,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    realtime: {
-                        duration: 20000,
-                        refresh: 1000,
-                        delay: 2000,
-                        onRefresh: onRefresh
-                    },
-                    // type: 'realtime'
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Value'
-                    }
-                }
-            },
-            interaction: {
-                intersect: false
-            }
-        }
     });
+};
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Profit',
+            data: data,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                realtime: {
+                    duration: 20000,
+                    refresh: 1000,
+                    delay: 2000,
+                    onRefresh: onRefresh
+                },
+                // type: 'realtime'
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            }
+        },
+        interaction: {
+            intersect: false
+        }
+    }
+});
 </script>

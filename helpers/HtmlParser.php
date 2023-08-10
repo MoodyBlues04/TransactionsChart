@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use app\dto\Balance;
 use DOMDocument;
 use DOMElement;
 
@@ -15,28 +16,33 @@ class HtmlParser
         $this->dom->loadHTML($html);
     }
 
-    public function getBalance(string $balanceColumnName): array
+    public function getBalance(string $balanceColumnName, string $timeColumnName): Balance
     {
         $table = $this->parseTableToArray();
 
-        $balanceData = [];
+        $balance = new Balance();
 
-        $columnIdx = false;
+        $columnBalanceIdx = false;
+        $columnTimeIdx = false;
 
         foreach ($table as $row) {
-            if ($columnIdx === false) {
-                $columnIdx = array_search($balanceColumnName, $row);
+            if ($columnBalanceIdx === false || $columnTimeIdx === false) {
+                $columnBalanceIdx = array_search($balanceColumnName, $row);
+                $columnTimeIdx = array_search($timeColumnName, $row);
                 continue;
             }
 
-            if (!isset($row[$columnIdx])) {
+            if (!isset($row[$columnBalanceIdx], $row[$columnTimeIdx]) || empty($row[$columnTimeIdx])) {
                 continue;
             }
 
-            $balanceData[] = end($balanceData) + (float)str_replace(' ', '', $row[$columnIdx]);
+            $balance->add(
+                $row[$columnTimeIdx],
+                $this->getParsedProfit($row[$columnBalanceIdx])
+            );
         }
 
-        return $balanceData;
+        return $balance;
     }
 
     /**
@@ -115,5 +121,10 @@ class HtmlParser
     {
         $emptyCells = array_fill(0, $col->getAttribute('colspan') - 1, '');
         $parsedRow = array_merge($parsedRow, $emptyCells);
+    }
+
+    private function getParsedProfit(string $profit): float
+    {
+        return (float)str_replace(' ', '', $profit);
     }
 }

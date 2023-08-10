@@ -5,10 +5,13 @@ namespace app\controllers;
 use app\models\TransactionReport;
 use app\models\TransactionReportForm;
 use app\repository\TransactionReportRepository;
+use app\traits\ErrorHandler;
 use yii\web\Controller;
 
 class TransactionReportController extends Controller
 {
+    use ErrorHandler;
+
     private TransactionReportRepository $transactionReportRepository;
 
     public function __construct($id, $module, $config = [], TransactionReportRepository $transactionReportRepository)
@@ -19,7 +22,6 @@ class TransactionReportController extends Controller
 
     // TODO mb simple unit tests
 
-    // TODO all files form storage show
     public function actionIndex()
     {
         $transactionReports = TransactionReport::find()->orderBy(['created_at' => SORT_DESC])->all();
@@ -45,10 +47,7 @@ class TransactionReportController extends Controller
 
             return $this->redirect('./index');
         } catch (\Exception $e) {
-            // TODO logging
-            // TODO error handler
-            \Yii::$app->session->setFlash('error', $e->getMessage());
-            return $this->redirect(\Yii::$app->request->referrer ?: \Yii::$app->homeUrl);
+            $this->hanleAndRedirect($e);
         }
     }
 
@@ -70,8 +69,7 @@ class TransactionReportController extends Controller
 
             return $this->redirect('./index');
         } catch (\Exception $e) {
-            \Yii::$app->session->setFlash('error', $e->getMessage());
-            return $this->redirect(\Yii::$app->request->referrer ?: \Yii::$app->homeUrl);
+            $this->hanleAndRedirect($e);
         }
     }
 }
