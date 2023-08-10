@@ -11,6 +11,7 @@ class ChartController extends Controller
     use ErrorHandler;
 
     public $layout = false;
+
     private TransactionReportRepository $transactionReportRepository;
 
     public function __construct($id, $module, $config = [], TransactionReportRepository $transactionReportRepository)
