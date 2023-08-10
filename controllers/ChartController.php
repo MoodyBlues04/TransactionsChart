@@ -41,7 +41,6 @@ class ChartController extends Controller
             return $this->render('generate', compact('balances', 'times'));
         } catch (\Exception $e) {
             $this->hanleAndRedirect($e);
-            return;
         }
     }
 }
