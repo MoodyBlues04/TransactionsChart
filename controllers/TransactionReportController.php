@@ -20,11 +20,9 @@ class TransactionReportController extends Controller
         $this->transactionReportRepository = $transactionReportRepository;
     }
 
-    // TODO mb simple unit tests
-
     public function actionIndex()
     {
-        $transactionReports = TransactionReport::find()->orderBy(['created_at' => SORT_DESC])->all();
+        $transactionReports = $this->transactionReportRepository->getAllOrdered();
 
         return $this->render('index', compact('transactionReports'));
     }
@@ -42,7 +40,6 @@ class TransactionReportController extends Controller
             $transactionReportForm = new TransactionReportForm();
             $transactionReportForm->loadPostData();
 
-            // TODO to ActiveRecord model / repo
             $transactionReportForm->save();
 
             return $this->redirect('./index');
@@ -54,7 +51,6 @@ class TransactionReportController extends Controller
     public function actionDelete()
     {
         try {
-            // TODO to obj ???
             $transactionReportId = \Yii::$app->request->post('id');
             if (is_null($transactionReportId)) {
                 throw new \Exception('Report id is required');

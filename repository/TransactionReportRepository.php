@@ -10,4 +10,11 @@ class TransactionReportRepository
     {
         return TransactionReport::findOne($id);
     }
+
+    public function getAllOrdered(): array
+    {
+        return TransactionReport::find()
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+    }
 }
