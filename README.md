@@ -1,2 +1,2 @@
 ### TransactionsChart
-![example transaction reports](https://ibb.co/n3k9qhp)
+![example transaction reports](https://i.ibb.co/XyJ1fmH/example.png)
