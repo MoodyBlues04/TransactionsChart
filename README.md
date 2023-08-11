@@ -8,3 +8,5 @@
 ![example transaction reports](https://i.ibb.co/XyJ1fmH/example.png)
 <br/>
 Also you can find example of valid html tables in ./examples folder
+<br/>
+The order of the columns is not important, but the 'Profit' and 'Open Time' columns must be in the table
