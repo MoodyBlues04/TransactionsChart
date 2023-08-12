@@ -42,7 +42,6 @@ class ChartController extends Controller
 
             $transactionReport = $this->transactionReportRepository->getByIdOrFail($chartSettingsForm->transactionReportId);
 
-            // TODO to lowercase when search
             $balance = $transactionReport->getBalanceReport(
                 $chartSettingsForm->balanceColumnName,
                 $chartSettingsForm->timeColumnName

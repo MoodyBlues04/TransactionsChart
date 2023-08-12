@@ -27,8 +27,8 @@ class HtmlParser
 
         foreach ($table as $row) {
             if ($columnBalanceIdx === false || $columnTimeIdx === false) {
-                $columnBalanceIdx = array_search($balanceColumnName, $row);
-                $columnTimeIdx = array_search($timeColumnName, $row);
+                $columnBalanceIdx = $this->getColumnIdxCaseInsensitive($balanceColumnName, $row);
+                $columnTimeIdx = $this->getColumnIdxCaseInsensitive($timeColumnName, $row);
                 continue;
             }
 
@@ -103,24 +103,35 @@ class HtmlParser
 
     private function getParsedRow(DOMElement $row): array
     {
-        $cols = $row->getElementsByTagName('td');
+        $cells = $row->getElementsByTagName('td');
 
         $parsedRow = [];
-        foreach ($cols as $col) {
-            $parsedRow[] = $col->nodeValue;
+        foreach ($cells as $cell) {
+            $parsedRow[] = $cell->nodeValue;
 
-            if ($col->hasAttribute('colspan')) {
-                $this->addSkipedByColspanCells($parsedRow, $col);
+            if ($cell->hasAttribute('colspan')) {
+                $this->addSkippedByColspanCells($parsedRow, $cell);
             }
         }
 
         return $parsedRow;
     }
 
-    private function addSkipedByColspanCells(array &$parsedRow, DOMElement $col): void
+    /**
+     * Adds cells that were removed by the colspan attribute back to the row.
+     */
+    private function addSkippedByColspanCells(array &$parsedRow, DOMElement $cell): void
     {
-        $emptyCells = array_fill(0, $col->getAttribute('colspan') - 1, '');
-        $parsedRow = array_merge($parsedRow, $emptyCells);
+        $removedCells = array_fill(0, $cell->getAttribute('colspan') - 1, '');
+        $parsedRow = array_merge($parsedRow, $removedCells);
+    }
+
+    private function getColumnIdxCaseInsensitive(string $columnName, array &$row): int|string|bool
+    {
+        return array_search(
+            strtolower($columnName),
+            array_map('strtolower', $row)
+        );
     }
 
     private function getParsedProfit(string $profit): float

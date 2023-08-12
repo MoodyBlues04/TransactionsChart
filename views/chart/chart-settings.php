@@ -18,6 +18,11 @@ use app\models\ChartSettingsForm;
                     <h5 class="card-title">Generate chart</h5>
                 </div>
                 <div class="card-body">
+                    <div class="card-title">
+                        Please enter the names of the columns in which the 'Profit' and 'Open time' are
+                        specified. Column names are case-insensitive
+                    </div>
+
                     <?php
                     $form = ActiveForm::begin([
                         'action' => ['/chart/generate'],
@@ -31,10 +36,12 @@ use app\models\ChartSettingsForm;
 
                     <?= $form->field($chartSettingsForm, 'balanceColumnName')->textInput([
                         'class' => 'form-control',
+                        'value' => 'Profit'
                     ])->label('Balance column name') ?>
 
                     <?= $form->field($chartSettingsForm, 'timeColumnName')->textInput([
                         'class' => 'form-control',
+                        'value' => 'Open time'
                     ])->label('Time column name') ?>
 
                     <div class="form-group">
