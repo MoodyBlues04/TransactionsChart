@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
-use app\models\TransactionReport;
 use app\models\TransactionReportForm;
 use app\repository\TransactionReportRepository;
+use app\requests\Request;
 use app\traits\ErrorHandler;
 use yii\web\Controller;
 
@@ -51,15 +51,10 @@ class TransactionReportController extends Controller
     public function actionDelete()
     {
         try {
-            $transactionReportId = \Yii::$app->request->post('id');
-            if (is_null($transactionReportId)) {
-                throw new \Exception('Report id is required');
-            }
+            $request = new Request();
+            $transactionReportId = $request->getGetParamOrFail('id', 'Report id is required');
 
-            $transactionReport = $this->transactionReportRepository->getById($transactionReportId);
-            if (is_null($transactionReport)) {
-                throw new \Exception('Invalid report id');
-            }
+            $transactionReport = $this->transactionReportRepository->getByIdOrFail($transactionReportId);
 
             $transactionReport->delete();
 

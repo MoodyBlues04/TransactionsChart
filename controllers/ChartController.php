@@ -2,15 +2,15 @@
 
 namespace app\controllers;
 
+use app\models\ChartSettingsForm;
 use app\repository\TransactionReportRepository;
+use app\requests\Request;
 use app\traits\ErrorHandler;
 use yii\web\Controller;
 
 class ChartController extends Controller
 {
     use ErrorHandler;
-
-    public $layout = false;
 
     private TransactionReportRepository $transactionReportRepository;
 
@@ -20,26 +20,38 @@ class ChartController extends Controller
         $this->transactionReportRepository = $transactionReportRepository;
     }
 
+    public function actionChartSettings()
+    {
+        try {
+            $request = new Request();
+            $transactionReportId = $request->getGetParamOrFail('transaction_report', 'Report id is required');
+
+            $chartSettingsForm = new ChartSettingsForm();
+
+            return $this->render('chart-settings', compact('transactionReportId', 'chartSettingsForm'));
+        } catch (\EXception $e) {
+            $this->hanleAndRedirect($e);
+        }
+    }
+
     public function actionGenerate()
     {
         try {
-            $transactionReportId = \Yii::$app->request->get('transaction_report');
-            if (is_null($transactionReportId)) {
-                throw new \Exception('Report id is required');
-            }
+            $chartSettingsForm = new ChartSettingsForm();
+            $chartSettingsForm->loadPostData();
 
-            $transactionReport = $this->transactionReportRepository->getById($transactionReportId);
-            if (is_null($transactionReport)) {
-                throw new \Exception('Invalid report id');
-            }
+            $transactionReport = $this->transactionReportRepository->getByIdOrFail($chartSettingsForm->transactionReportId);
 
             // TODO to lowercase when search
-            $balance = $transactionReport->getBalanceReport('Profit', 'Open Time');
+            $balance = $transactionReport->getBalanceReport(
+                $chartSettingsForm->balanceColumnName,
+                $chartSettingsForm->timeColumnName
+            );
 
             $balances = $balance->getBalance();
             $times = $balance->getTime();
 
-            return $this->render('generate', compact('balances', 'times'));
+            return $this->renderPartial('generate', compact('balances', 'times'));
         } catch (\Exception $e) {
             $this->hanleAndRedirect($e);
         }

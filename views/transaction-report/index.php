@@ -34,7 +34,7 @@
                         <td><?= $transactionReport->path ?></td>
                         <td><?= $transactionReport->created_at ?></td>
                         <td>
-                            <a href="/chart/generate?transaction_report=<?= $transactionReport->id ?>" class="btn btn-primary">
+                            <a href="/chart/chart-settings?transaction_report=<?= $transactionReport->id ?>" class="btn btn-primary">
                                 Generate chart
                             </a>
                             <button class="btn btn-danger" onclick="deleteReport(<?= $transactionReport->id ?>)">

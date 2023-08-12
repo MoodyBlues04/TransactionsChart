@@ -26,16 +26,16 @@ class TransactionReport extends ActiveRecord
         return parent::beforeDelete();
     }
 
-    public function getReportFile(): string|bool
-    {
-        return Storage::get($this->path);
-    }
-
     public function getBalanceReport(string $balanceColumnName, string $timeColumnName): Balance
     {
         $html = $this->getReportFile();
 
         $htmlParser = new HtmlParser($html);
         return $htmlParser->getBalance($balanceColumnName, $timeColumnName);
+    }
+
+    public function getReportFile(): string|bool
+    {
+        return Storage::get($this->path);
     }
 }
