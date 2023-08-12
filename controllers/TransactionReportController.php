@@ -52,7 +52,7 @@ class TransactionReportController extends Controller
     {
         try {
             $request = new Request();
-            $transactionReportId = $request->getGetParamOrFail('id', 'Report id is required');
+            $transactionReportId = $request->getPostParamOrFail('id', 'Report id is required');
 
             $transactionReport = $this->transactionReportRepository->getByIdOrFail($transactionReportId);
 
