@@ -23,7 +23,6 @@ class ChartController extends Controller
     public function actionChartSettings()
     {
         try {
-            throw new \Exception('test');
             $request = new Request();
             $transactionReportId = $request->getGetParamOrFail('transaction_report', 'Report id is required');
 
